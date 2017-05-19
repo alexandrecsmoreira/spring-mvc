@@ -3,8 +3,11 @@ package br.com.caelum.contas.controller;
 import java.util.Calendar;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -34,8 +37,12 @@ public class ContaController {
 	}
 	
 	@RequestMapping("/adicionaConta")
-	public String adiciona(Conta conta) {
+	public String adiciona(@Valid Conta conta, BindingResult result) {
 
+		if (result.hasFieldErrors("descricao")) {
+			return "conta/formulario";
+		}
+		
 		ContaDAO contaDAO = new ContaDAO();
 		contaDAO.adiciona(conta);
 
