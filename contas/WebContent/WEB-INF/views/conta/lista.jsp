@@ -9,9 +9,28 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Caelum</title>
+
+<script src="resources/js/jquery.js"></script>
+
+<script type="text/javascript">
+	
+	function deuCerto(resp){
+		alert("Conta paga com sucesso");
+		
+	}
+	
+	function pagarConta(id){
+		$.get("pagaConta?id=" + id,function() {
+			  $("#conta_"+id).html("Paga");
+		});
+	}
+
+
+</script>
+
 </head>
 <body>
-	    <table style="height: 10px; width: 775px;" border="1">
+	<table style="height: 10px; width: 775px;" border="1">
         <tr>
         <th>Código</th>
         <th>Descrição</th>
@@ -39,6 +58,11 @@
             
             <td>
 				<a href="removeConta?id=${conta.id}">Deletar</a>
+				
+				<c:if test="${conta.paga eq false}">
+					<a href="javascript:pagarConta(${conta.id})">Paga</a>
+				</c:if>
+				
 				<a href="formularioAlterar?id=${conta.id}">Alterar</a>	
 			</td>
         </tr>     

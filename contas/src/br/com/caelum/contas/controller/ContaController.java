@@ -3,8 +3,10 @@ package br.com.caelum.contas.controller;
 import java.util.Calendar;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -17,6 +19,13 @@ import br.com.caelum.contas.modelo.Conta;
 
 @Controller
 public class ContaController {
+	
+	private ContaDAO contaDAO;
+
+	@Autowired
+	public ContaController(ContaDAO dao) {
+		this.contaDAO = dao;
+	}
 
 	@DateTimeFormat(pattern="dd/MM/yyyy")
 	private Calendar dataPagamento;
@@ -28,7 +37,7 @@ public class ContaController {
 
 	@RequestMapping("/formularioAlterar")
 	public ModelAndView formularioAlterar(Conta conta) {
-		Conta contaDAO = new ContaDAO().buscaPorId(conta.getId());
+		contaDAO.buscaPorId(conta.getId());
 
 		ModelAndView modelAndView = new ModelAndView("conta/formulario-alterar");
 		modelAndView.addObject("conta", contaDAO);
@@ -43,7 +52,6 @@ public class ContaController {
 			return "conta/formulario";
 		}
 		
-		ContaDAO contaDAO = new ContaDAO();
 		contaDAO.adiciona(conta);
 
 		return "conta/conta-adicionada";
@@ -52,20 +60,26 @@ public class ContaController {
 	@RequestMapping("/listaConta")
 	public ModelAndView lista(Conta conta) {
 
-		List<Conta> contaDAO = new ContaDAO().lista();
+		List<Conta> lista = contaDAO.lista();
 
 		ModelAndView modelAndView = new ModelAndView("conta/lista");
-		modelAndView.addObject("todasContas", contaDAO);
+		modelAndView.addObject("todasContas", lista);
 
 		return modelAndView;
 	}
 
 	@RequestMapping("/removeConta")
 	public String remove(Conta conta) {
-		ContaDAO contaDAO = new ContaDAO();
 		contaDAO.remove(conta);
 
 		return "redirect:listaConta";
+	}
+	
+	@RequestMapping("/pagaConta")
+	public void paga(Conta conta, HttpServletResponse resp) {
+		contaDAO.paga(conta.getId());
+		
+		resp.setStatus(200);
 	}
 
 	@RequestMapping(value="/alteraConta", method=RequestMethod.POST)
